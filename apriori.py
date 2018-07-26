@@ -69,7 +69,7 @@ def apriori(df, min_support=0.5, max_support=1.0, use_colnames=False, max_len=No
         6      0        0     1        0     1     0
         7      1        1     0        0     0     0
     ```
-    RARE PATTERN MINING 5
+
     max_support : float (default: 0.1)
       A float between 0 and 1 for minumum support of the itemsets returned.
       The support is computed as the fraction
@@ -101,36 +101,42 @@ def apriori(df, min_support=0.5, max_support=1.0, use_colnames=False, max_len=No
     """
 
     X = df.values
+    # iterator on columns (items)
     ary_col_idx = np.arange(X.shape[1])
-    # support pour les attributs simpple
+    # support for 1-itemssets : sum along rows
     support = (np.sum(X, axis=0) / float(X.shape[0]))
     # dict of support
     support_dict = {1: support[(support >= min_support) & (support <= max_support)]}
-    # dict of itemset name
+    # dict of itemset index with good cond on support of each
     itemset_dict = {1: ary_col_idx[(support >= min_support) & (support <= max_support)].reshape(-1, 1)}
     max_itemset = 1
     rows_count = float(X.shape[0])
 
     if max_len is None:
+        # no condition on lenght of itemsets.
         max_len = float('inf')
 
     while max_itemset and max_itemset < max_len:
         next_max_itemset = max_itemset + 1
+        # new combinations from index to fom n+1 itemsets
         combin = generate_new_combinations(itemset_dict[max_itemset])
         frequent_items = []
         frequent_items_support = []
 
         for c in combin:
+            # test whether all array elements evaluate to true.
             together = X[:, c].all(axis=1)
+            # support
             support = together.sum() / rows_count
             if (support >= min_support) & (support <= max_support):
+                # append to the set of sets if condition ok
                 frequent_items.append(c)
                 frequent_items_support.append(support)
 
         if frequent_items:
             itemset_dict[next_max_itemset] = np.array(frequent_items)
             support_dict[next_max_itemset] = np.array(frequent_items_support)
-            
+
             max_itemset = next_max_itemset
         else:
             max_itemset = 0
