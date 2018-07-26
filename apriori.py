@@ -69,7 +69,11 @@ def apriori(df, min_support=0.5, max_support=1.0, use_colnames=False, max_len=No
         6      0        0     1        0     1     0
         7      1        1     0        0     0     0
     ```
-
+    RARE PATTERN MINING 
+    max_support : float (default: 0.1)
+      A float between 0 and 1 for minumum support of the itemsets returned.
+      The support is computed as the fraction
+      transactions_where_item(s)_occur / total_transactions.
     min_support : float (default: 0.5)
       A float between 0 and 1 for minumum support of the itemsets returned.
       The support is computed as the fraction
